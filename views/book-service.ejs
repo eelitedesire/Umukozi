@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Service - Omikoz Photography</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-form">
+            <h2>Book <%= service.title %></h2>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;"><%= service.icon %></div>
+                <p><%= service.description %></p>
+            </div>
+            <form method="POST" action="/book-service">
+                <input type="hidden" name="serviceId" value="<%= service._id %>">
+                <input type="date" name="bookingDate" required>
+                <textarea name="notes" placeholder="Additional notes or requirements" rows="4"></textarea>
+                <button type="submit" class="cta-btn">Book This Service</button>
+            </form>
+            <a href="/" class="back-link">← Back to Services</a>
+        </div>
+    </div>
+</body>
+</html>

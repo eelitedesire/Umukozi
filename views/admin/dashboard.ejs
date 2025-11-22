@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Omikoz Photography</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        .sidebar { position: fixed; left: 0; top: 0; width: 250px; height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; }
+        .sidebar h2 { margin-bottom: 2rem; text-align: center; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin-bottom: 0.5rem; }
+        .sidebar a { color: white; text-decoration: none; padding: 0.75rem; display: block; border-radius: 5px; transition: background 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.2); }
+        .main-content { margin-left: 250px; padding: 2rem; }
+        .header { background: white; padding: 1rem 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .card { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+        .card h3 { margin-bottom: 1rem; color: #333; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
+        .form-group input, .form-group textarea { width: 100%; padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 5px; font-size: 1rem; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #667eea; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; transition: transform 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn:hover { transform: translateY(-2px); }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+        .service-item { background: #f8f9fa; padding: 1rem; border-radius: 5px; border-left: 4px solid #667eea; }
+        .service-actions { margin-top: 1rem; }
+        .service-actions button { margin-right: 0.5rem; }
+        .success { background: #d4edda; color: #155724; padding: 0.75rem; border-radius: 5px; margin-bottom: 1rem; }
+        .error { background: #f8d7da; color: #721c24; padding: 0.75rem; border-radius: 5px; margin-bottom: 1rem; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tabs { display: flex; margin-bottom: 2rem; }
+        .tab { padding: 1rem 2rem; background: #e9ecef; border: none; cursor: pointer; border-radius: 5px 5px 0 0; margin-right: 0.25rem; }
+        .tab.active { background: white; border-bottom: 2px solid #667eea; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>📸 Admin Panel</h2>
+        <ul>
+            <li><a href="#" onclick="showTab('settings')" class="active">⚙️ Site Settings</a></li>
+            <li><a href="#" onclick="showTab('services')">🛠️ Services</a></li>
+            <li><a href="#" onclick="showTab('carousel')">🎠 Carousel</a></li>
+            <li><a href="#" onclick="showTab('bookings')">📅 Bookings</a></li>
+            <li><a href="#" onclick="showTab('logo')">🖼️ Logo & Images</a></li>
+            <li><a href="/admin/logout">🚪 Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Welcome to Admin Dashboard</h1>
+            <span>Manage your photography website</span>
+        </div>
+
+        <% if (typeof success !== 'undefined') { %>
+            <div class="success"><%= success %></div>
+        <% } %>
+        <% if (typeof error !== 'undefined') { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+
+        <!-- Site Settings Tab -->
+        <div id="settings" class="tab-content active">
+            <div class="card">
+                <h3>Site Settings</h3>
+                <form method="POST" action="/admin/settings">
+                    <div class="form-group">
+                        <label for="siteName">Site Name</label>
+                        <input type="text" id="siteName" name="siteName" value="<%= settings.siteName %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="siteTitle">Site Title</label>
+                        <input type="text" id="siteTitle" name="siteTitle" value="<%= settings.siteTitle %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Contact Email</label>
+                        <input type="email" id="email" name="email" value="<%= settings.email %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Contact Phone</label>
+                        <input type="text" id="phone" name="phone" value="<%= settings.phone %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="aboutText">About Text</label>
+                        <textarea id="aboutText" name="aboutText" rows="4" required><%= settings.aboutText %></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Settings</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Services Tab -->
+        <div id="services" class="tab-content">
+            <div class="card">
+                <h3>Add New Service</h3>
+                <form method="POST" action="/admin/services" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="title">Service Title</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="icon">Icon (emoji)</label>
+                        <input type="text" id="icon" name="icon" placeholder="📷" maxlength="2">
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceImage">Service Image (optional)</label>
+                        <input type="file" id="serviceImage" name="serviceImage" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Service</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Existing Services</h3>
+                <div class="services-grid">
+                    <% services.forEach(service => { %>
+                        <div class="service-item">
+                            <% if (service.imagePath) { %>
+                                <img src="<%= service.imagePath %>" alt="<%= service.title %>" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 1rem;">
+                            <% } %>
+                            <h4><%= service.icon %> <%= service.title %></h4>
+                            <p><%= service.description %></p>
+                            <div class="service-actions">
+                                <button class="btn btn-primary" onclick="editService('<%= service._id %>', '<%= service.title %>', '<%= service.description %>', '<%= service.icon %>')">Edit</button>
+                                <button class="btn btn-success" onclick="uploadServiceImage('<%= service._id %>')">Upload Image</button>
+                                <form method="POST" action="/admin/services/<%= service._id %>/delete" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this service?')">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carousel Tab -->
+        <div id="carousel" class="tab-content">
+            <div class="card">
+                <h3>Add New Carousel Slide</h3>
+                <form method="POST" action="/admin/carousel" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="carouselTitle">Slide Title</label>
+                        <input type="text" id="carouselTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carouselSubtitle">Slide Subtitle</label>
+                        <input type="text" id="carouselSubtitle" name="subtitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carouselImage">Slide Image</label>
+                        <input type="file" id="carouselImage" name="carouselImage" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="linkUrl">Link URL (optional)</label>
+                        <input type="text" id="linkUrl" name="linkUrl" placeholder="/signup">
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Slide</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Existing Carousel Slides</h3>
+                <div class="services-grid">
+                    <% carouselSlides.forEach(slide => { %>
+                        <div class="service-item">
+                            <img src="<%= slide.imagePath %>" alt="<%= slide.title %>" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 1rem;">
+                            <h4><%= slide.title %></h4>
+                            <p><%= slide.subtitle %></p>
+                            <div class="service-actions">
+                                <button class="btn btn-primary" onclick="editCarousel('<%= slide._id %>', '<%= slide.title %>', '<%= slide.subtitle %>', '<%= slide.linkUrl %>')">Edit</button>
+                                <form method="POST" action="/admin/carousel/<%= slide._id %>/delete" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this slide?')">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Tab -->
+        <div id="bookings" class="tab-content">
+            <div class="card">
+                <h3>Customer Bookings</h3>
+                <% if (bookings && bookings.length > 0) { %>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa;">
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e9ecef;">Customer</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e9ecef;">Service</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e9ecef;">Date</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e9ecef;">Location</th>
+                                    <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e9ecef;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% bookings.forEach(booking => { %>
+                                    <tr style="border-bottom: 1px solid #e9ecef;">
+                                        <td style="padding: 1rem;">
+                                            <strong><%= booking.userId.name %></strong><br>
+                                            <small><%= booking.userId.email %></small><br>
+                                            <small><%= booking.userId.phone %></small>
+                                        </td>
+                                        <td style="padding: 1rem;"><%= booking.serviceId.title %></td>
+                                        <td style="padding: 1rem;"><%= new Date(booking.bookingDate).toLocaleDateString() %></td>
+                                        <td style="padding: 1rem;"><%= booking.userId.location %></td>
+                                        <td style="padding: 1rem;">
+                                            <span style="padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem; background: #fef3c7; color: #92400e;"><%= booking.status %></span>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <p style="text-align: center; color: #6b7280; padding: 2rem;">No bookings yet.</p>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Logo & Images Tab -->
+        <div id="logo" class="tab-content">
+            <div class="card">
+                <h3>Upload New Logo</h3>
+                <form method="POST" action="/admin/upload-logo" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="logo">Choose Logo Image</label>
+                        <input type="file" id="logo" name="logo" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload Logo</button>
+                </form>
+                
+                <div style="margin-top: 2rem;">
+                    <h4>Current Logo:</h4>
+                    <img src="<%= settings.logoPath %>" alt="Current Logo" style="max-width: 200px; margin-top: 1rem; border-radius: 5px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Service Modal -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px;">
+            <h3>Edit Service</h3>
+            <form id="editForm" method="POST">
+                <div class="form-group">
+                    <label for="editTitle">Service Title</label>
+                    <input type="text" id="editTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <textarea id="editDescription" name="description" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editIcon">Icon (emoji)</label>
+                    <input type="text" id="editIcon" name="icon" maxlength="2">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Service</button>
+                <button type="button" class="btn" onclick="closeEditModal()" style="background: #6c757d; color: white; margin-left: 1rem;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Service Image Upload Modal -->
+    <div id="imageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px;">
+            <h3>Upload Service Image</h3>
+            <form id="imageForm" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="serviceImage">Choose Image</label>
+                    <input type="file" id="serviceImage" name="serviceImage" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Image</button>
+                <button type="button" class="btn" onclick="closeImageModal()" style="background: #6c757d; color: white; margin-left: 1rem;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Carousel Modal -->
+    <div id="carouselModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 500px;">
+            <h3>Edit Carousel Slide</h3>
+            <form id="carouselForm" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="editCarouselTitle">Slide Title</label>
+                    <input type="text" id="editCarouselTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCarouselSubtitle">Slide Subtitle</label>
+                    <input type="text" id="editCarouselSubtitle" name="subtitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLinkUrl">Link URL</label>
+                    <input type="text" id="editLinkUrl" name="linkUrl">
+                </div>
+                <div class="form-group">
+                    <label for="editCarouselImage">New Image (optional)</label>
+                    <input type="file" id="editCarouselImage" name="carouselImage" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Slide</button>
+                <button type="button" class="btn" onclick="closeCarouselModal()" style="background: #6c757d; color: white; margin-left: 1rem;">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function editService(id, title, description, icon) {
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editDescription').value = description;
+            document.getElementById('editIcon').value = icon;
+            document.getElementById('editForm').action = `/admin/services/${id}/edit`;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function uploadServiceImage(id) {
+            document.getElementById('imageForm').action = `/admin/services/${id}/upload-image`;
+            document.getElementById('imageModal').style.display = 'block';
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        function editCarousel(id, title, subtitle, linkUrl) {
+            document.getElementById('editCarouselTitle').value = title;
+            document.getElementById('editCarouselSubtitle').value = subtitle;
+            document.getElementById('editLinkUrl').value = linkUrl || '';
+            document.getElementById('carouselForm').action = `/admin/carousel/${id}/edit`;
+            document.getElementById('carouselModal').style.display = 'block';
+        }
+
+        function closeCarouselModal() {
+            document.getElementById('carouselModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

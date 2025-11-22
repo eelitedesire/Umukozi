@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= settings.projectTitle || title %></title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="<%= settings.logoPath || '/images/WhatsApp Image 2025-10-28 at 15.42.31.jpeg' %>" alt="<%= settings.siteName %>">
+                <span class="site-name"><%= settings.siteName || 'Omikoz Photography' %></span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <% if (typeof userId !== 'undefined' && userId) { %>
+                    <li><a href="/logout">Logout</a></li>
+                <% } else { %>
+                    <li><a href="/login">Login</a></li>
+                <% } %>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Carousel Section -->
+    <section id="home" class="hero">
+        <div class="carousel-container">
+            <div class="carousel">
+                <% if (carouselSlides && carouselSlides.length > 0) { %>
+                    <% carouselSlides.forEach((slide, index) => { %>
+                        <div class="carousel-slide <%= index === 0 ? 'active' : '' %>" onclick="window.location.href='<%= slide.linkUrl %>'">
+                            <img src="<%= slide.imagePath %>" alt="<%= slide.title %>">
+                            <div class="carousel-caption">
+                                <h3><%= slide.title %></h3>
+                                <p><%= slide.subtitle %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <!-- Default slides if no carousel data -->
+                    <div class="carousel-slide active" onclick="window.location.href='/signup'">
+                        <img src="https://www.ktpress.rw/wp-content/uploads/2019/07/Bertrand.jpg" alt="Wedding Photography">
+                        <div class="carousel-caption">
+                            <h3>Wedding Photography</h3>
+                            <p>Capturing your special day with elegance</p>
+                        </div>
+                    </div>
+                    <div class="carousel-slide" onclick="window.location.href='/signup'">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTV-XMZQ1wSkHHeyBzPsXTMBbs3zrY0oIr3Q&s" alt="Portrait Sessions">
+                        <div class="carousel-caption">
+                            <h3>Portrait Sessions</h3>
+                            <p>Professional headshots & portraits</p>
+                        </div>
+                    </div>
+                    <div class="carousel-slide" onclick="window.location.href='/signup'">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqV3jXUW7KxcCISRfqZTm7OJYMpYaYJDbkOQ&s" alt="Event Coverage">
+                        <div class="carousel-caption">
+                            <h3>Event Coverage</h3>
+                            <p>Corporate & social events</p>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+            <button class="carousel-btn prev" onclick="changeSlide(-1)">❮</button>
+            <button class="carousel-btn next" onclick="changeSlide(1)">❯</button>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About <%= settings.siteName || companyName %></h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p><%= settings.aboutText || 'With years of experience in capturing precious moments, ' + (settings.siteName || companyName) + ' specializes in creating timeless memories through our lens. We believe every moment has a story worth telling.' %></p>
+                    <p>Our passion for photography drives us to deliver exceptional quality and personalized service for every client. From intimate portraits to grand celebrations, we capture the essence of your most important moments.</p>
+                </div>
+                <div class="about-image">
+                    <div class="placeholder-img">📸</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2>Our Services</h2>
+            <div class="services-grid">
+                <% services.forEach(service => { %>
+                    <div class="service-card">
+                        <div class="service-image">
+                            <% if (service.imagePath && service.imagePath.trim() !== '') { %>
+                                <img src="<%= service.imagePath %>" alt="<%= service.title %>">
+                            <% } else { %>
+                                <div class="service-icon"><%= service.icon %></div>
+                            <% } %>
+                        </div>
+                        <div class="service-content">
+                            <h3><%= service.title %></h3>
+                            <p><%= service.description %></p>
+                            <% if (service.price && service.price.trim() !== '') { %>
+                                <div class="service-price"><%= service.price %></div>
+                            <% } %>
+                            <% if (service.features && service.features.length > 0) { %>
+                                <ul class="service-features">
+                                    <% service.features.forEach(feature => { %>
+                                        <li><%= feature %></li>
+                                    <% }) %>
+                                </ul>
+                            <% } %>
+                            <a href="/book/<%= service._id %>" class="book-btn">Book Now</a>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Ready to Capture Your Story?</h2>
+            <p>Let's create something beautiful together</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span>📧</span>
+                    <p><%= settings.email || 'hello@omikozphotography.com' %></p>
+                </div>
+                <div class="contact-item">
+                    <span>📱</span>
+                    <p><%= settings.phone || '+1 (555) 123-4567' %></p>
+                </div>
+            </div>
+            <a href="mailto:<%= settings.email || 'hello@omikozphotography.com' %>" class="cta-btn">Get In Touch</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 <%= settings.siteName || companyName %>. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
