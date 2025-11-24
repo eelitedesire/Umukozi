@@ -96,8 +96,8 @@ const upload = multer({ storage });
 // Fallback data when MongoDB is not available
 const fallbackData = {
     settings: {
-        siteName: 'Omikoz Photography',
-        siteTitle: 'Omikoz Photography - Capturing Life\'s Moments',
+        siteName: 'ESIGN IMAGE STUDIO',
+        siteTitle: 'ESIGN IMAGE STUDIO - Capturing Life\'s Moments',
         logoPath: '/images/WhatsApp Image 2025-10-28 at 15.42.31.jpeg',
         email: 'hello@omikozphotography.com',
         phone: '+1 (555) 123-4567',
@@ -207,8 +207,8 @@ app.get('/', async (req, res) => {
         }
         
         res.render('index', {
-            title: settings.siteTitle || 'Omikoz Photography - Capturing Life\'s Moments',
-            companyName: settings.siteName || 'Omikoz Photography',
+            title: settings.siteTitle || 'ESIGN IMAGE STUDIO - Capturing Life\'s Moments',
+            companyName: settings.siteName || 'ESIGN IMAGE STUDIO',
             settings,
             services,
             carouselSlides,
@@ -217,8 +217,8 @@ app.get('/', async (req, res) => {
     } catch (error) {
         console.error('Error loading homepage:', error);
         res.render('index', {
-            title: 'Omikoz Photography - Capturing Life\'s Moments',
-            companyName: 'Omikoz Photography',
+            title: 'ESIGN IMAGE STUDIO - Capturing Life\'s Moments',
+            companyName: 'ESIGN IMAGE STUDIO',
             settings: fallbackData.settings,
             services: fallbackData.services,
             carouselSlides: [],
@@ -229,7 +229,7 @@ app.get('/', async (req, res) => {
 
 app.get('/signup', (req, res) => {
     res.render('signup', {
-        title: 'Sign Up - Omikoz Photography'
+        title: 'Sign Up - ESIGN IMAGE STUDIO'
     });
 });
 
